@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS `{prefix}_wolf_helloasso_history`;

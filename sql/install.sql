@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS `{prefix}_wolf_helloasso_history` (`id` INT NOT NULL AUTO_INCREMENT , `event_type` VARCHAR(32) NOT NULL, `event_data` JSON NOT NULL, `created_at` DATETIME NOT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB;

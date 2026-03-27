@@ -1,0 +1,16 @@
+{
+    "name": "wolf/helloasso",
+    "autoload": {
+        "psr-4": {
+            "Wolf\\HelloAsso\\": "inc/"
+        }
+    },
+    "authors": [
+        {
+            "name": "phabi1"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.10"
+    }
+}
