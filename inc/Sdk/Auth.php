@@ -16,11 +16,17 @@ class Auth
      */
     private $httpClient;
 
-    public function __construct(Client $client)
+    private $storage;
+
+    public function __construct(Client $client, \Wolf\HelloAsso\Sdk\Auth\Storage\StorageInterface $storage)
     {
         $this->client = $client;
+        $this->storage = $storage;
+
+        $baseUri = $this->client->getBaseUri();
+
         $this->httpClient = new \GuzzleHttp\Client([
-            'base_uri' => 'https://api.helloasso.com/',
+            'base_uri' => $baseUri,
             'headers' => [
                 'Content-Type' => 'application/json',
             ]
@@ -29,27 +35,35 @@ class Auth
 
     public function getAccessToken()
     {
-        $token = get_option('wolf_helloasso_access_token');
+        $token = $this->storage->getToken();
         if (!$token) {
             $token = $this->fetchAccessToken();
             if (!$token) {
                 throw new \Exception('Unable to fetch access token from HelloAsso API');
             }
-            add_option('wolf_helloasso_access_token', $token);
-            $accessToken = json_decode($token, true)['access_token'];
+            $this->storage->setToken($token);
+            $accessToken = $token['access_token'];
         } else {
-            $tokenData = json_decode($token, true);
-            if (time() >= $tokenData['expires_at']) {
-                $token = $this->fetchAccessToken();
+            if (time() < $token['expires_at']) {
+                $accessToken = $token['access_token'];
+            } elseif (isset($token['refresh_token'])) {
+                $token = $this->refreshAccessToken($token['refresh_token']);
                 if ($token) {
-                    update_option('wolf_helloasso_access_token', $token);
+                    $this->storage->setToken($token);
+                    $accessToken = $token['access_token'];
+                } else {
+                    throw new \Exception('Unable to refresh access token from HelloAsso API');
                 }
-                $accessToken = json_decode($token, true)['access_token'];
             } else {
-                $accessToken = $tokenData['access_token'];
+                $token = $this->fetchAccessToken();
+                if (!$token) {
+                    throw new \Exception('Unable to fetch access token from HelloAsso API');
+                }
+                $this->storage->setToken($token);
+                $accessToken = $token['access_token'];
             }
         }
-       return $accessToken;
+        return $accessToken;
     }
 
     private function fetchAccessToken()
@@ -64,10 +78,36 @@ class Auth
 
         if ($response->getStatusCode() === 200) {
             $data = json_decode($response->getBody(), true);
-            return json_encode([
+            return [
                 'access_token' => $data['access_token'],
+                'refresh_token' => $data['refresh_token'],
+                'token_type' => $data['token_type'],
                 'expires_at' => time() + $data['expires_in'] - 60, // 60 seconds buffer
-            ]);
+            ];
+        }
+
+        return null;
+    }
+
+    private function refreshAccessToken($refreshToken)
+    {
+        $response = $this->httpClient->request('POST', 'oauth2/token', [
+            'form_params' => [
+                'client_id' => $this->client->getApiKey(),
+                'client_secret' => $this->client->getApiSecret(),
+                'grant_type' => 'refresh_token',
+                'refresh_token' => $refreshToken,
+            ],
+        ]);
+
+        if ($response->getStatusCode() === 200) {
+            $data = json_decode($response->getBody(), true);
+            return [
+                'access_token' => $data['access_token'],
+                'refresh_token' => $data['refresh_token'],
+                'token_type' => $data['token_type'],
+                'expires_at' => time() + $data['expires_in'] - 60, // 60 seconds buffer
+            ];
         }
 
         return null;

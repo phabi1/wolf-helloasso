@@ -1,6 +1,6 @@
 <?php
 
-namespace Wolf\HelloAsso\Webhook;
+namespace Wolf\HelloAsso\Webhook\Handler;
 
 interface WebhookHandlerInterface
 {

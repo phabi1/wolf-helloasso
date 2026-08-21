@@ -16,8 +16,5 @@ class Plugin
 
         $api = new Api();
         $api->setup();
-
-        $webhooks = new Webhooks();
-        $webhooks->setup();
     }
 }

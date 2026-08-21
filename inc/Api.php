@@ -32,6 +32,12 @@ class Api implements ContainerAwareInterface
 
     protected function registerMappingRoutes()
     {
+        $controller = $this->getController('wolf-helloasso.controller.webhook');
+        register_rest_route('wolf-helloasso/v1', 'webhooks', [
+            'methods' => 'POST',
+            'callback' => [$controller, 'handle'],
+            'permission_callback' => '__return_true',
+        ]);
         $controller = $this->getController('wolf-helloasso.controller.mapping');
         register_rest_route('wolf-helloasso/v1', 'mapping/synchronize', [
             'methods' => 'POST',

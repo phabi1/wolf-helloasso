@@ -1,6 +1,6 @@
 <?php
 
-namespace Wolf\HelloAsso;
+namespace Wolf\HelloAsso\Webhook;
 
 use Wolf\Core\Di\ContainerAwareInterface;
 use Wolf\Core\Di\ContainerAwareTrait;

@@ -27,6 +27,7 @@ class Admin
     {
         register_setting('wolf_helloasso_settings', 'wolf_helloasso_organization_slug');
         register_setting('wolf_helloasso_settings', 'wolf_helloasso_credentials');
+        register_setting('wolf_helloasso_settings', 'wolf_helloasso_sandbox');
 
         add_settings_section(
             'wolf_helloasso_api_section',
@@ -66,7 +67,13 @@ class Admin
             'wolf_helloasso_organization_section'
         );
 
-
+        add_settings_field(
+            'wolf_helloasso_sandbox',
+            'Sandbox Mode',
+            [$this, 'renderSandboxField'],
+            'wolf_helloasso_settings',
+            'wolf_helloasso_organization_section'
+        );
     }
 
     public function renderApiSectionText()
@@ -97,6 +104,12 @@ class Admin
     {
         $organizationSlug = get_option('wolf_helloasso_organization_slug', '');
         echo '<input type="text" name="wolf_helloasso_organization_slug" value="' . esc_attr($organizationSlug) . '" class="regular-text">';
+    }
+
+    public function renderSandboxField()
+    {
+        $sandbox = get_option('wolf_helloasso_sandbox', '');
+        echo '<input type="checkbox" name="wolf_helloasso_sandbox" value="1"' . checked(1, $sandbox, false) . '>';
     }
 
     public function renderSettingsPage()
