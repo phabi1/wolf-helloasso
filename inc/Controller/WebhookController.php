@@ -35,7 +35,7 @@ class WebhookController extends AbstractController
 
         $eventId = $this->generateEventId($payload);
 
-        if ($historyRepository->findOne(['event_id' => $eventId])) {
+        if ($historyRepository->count(['event_id' => ['eq' => $eventId]]) > 0) {
             return new \WP_REST_Response(['status' => 'duplicate'], 200);
         }
 
@@ -64,6 +64,8 @@ class WebhookController extends AbstractController
         switch ($eventType) {
             case 'Order':
                 return 'receive_order';
+            case 'Payment':
+                return 'receive_payment';
             // Add more cases as needed for different event types
             default:
                 return null; // Fallback to the original event type if no mapping is found

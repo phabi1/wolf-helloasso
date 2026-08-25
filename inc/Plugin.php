@@ -2,6 +2,8 @@
 
 namespace Wolf\HelloAsso;
 
+use Wolf\Core\Migration\Migrator;
+
 class Plugin
 {
     public function run()
@@ -11,6 +13,7 @@ class Plugin
 
     public function init()
     {
+        Migrator::upgrade('wolf-helloasso', WOLF_HELLOASSO_PLUGIN_DIR, 'Wolf\HelloAsso', WOLF_HELLOASSO_PLUGIN_VERSION);
         $admin = new Admin();
         $admin->setup();
 
