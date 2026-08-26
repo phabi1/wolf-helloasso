@@ -21,9 +21,6 @@ return [
     'wolf-helloasso.controller.webhook' => [
         'class' => \Wolf\HelloAsso\Controller\WebhookController::class,
     ],
-    'wolf-helloasso.controller.mapping' => [
-        'class' => \Wolf\HelloAsso\Controller\MappingController::class,
-    ],
     'wolf-helloasso.webhook_bus' => [
         'class' => \Wolf\HelloAsso\Webhook\WebhookBus::class,
     ],

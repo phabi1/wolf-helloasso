@@ -15,9 +15,18 @@ class Order
     public Payer $payer;
     public $metadata;
 
-    public function __construct()
+    public function __construct(array $options = [])
     {
         $this->payer = new Payer();
+        foreach ($options as $key => $value) {
+            if ($key === 'payer' && is_array($value)) {
+                $this->payer = new Payer($value);
+            } else {
+                if (property_exists($this, $key)) {
+                    $this->$key = $value;
+                }
+            }
+        }
     }
 
 }

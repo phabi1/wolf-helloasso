@@ -13,7 +13,7 @@ class Api implements ContainerAwareInterface
     public function setup()
     {
         add_action('rest_api_init', function () {
-            $this->registerMappingRoutes();
+            $this->registerWebhookRoute();
         });
     }
 
@@ -30,19 +30,13 @@ class Api implements ContainerAwareInterface
         return $this->getContainer()->get($controllerName);
     }
 
-    protected function registerMappingRoutes()
+    protected function registerWebhookRoute()
     {
         $controller = $this->getController('wolf-helloasso.controller.webhook');
         register_rest_route('wolf-helloasso/v1', 'webhooks', [
             'methods' => 'POST',
             'callback' => [$controller, 'handle'],
             'permission_callback' => '__return_true',
-        ]);
-        $controller = $this->getController('wolf-helloasso.controller.mapping');
-        register_rest_route('wolf-helloasso/v1', 'mapping/synchronize', [
-            'methods' => 'POST',
-            'callback' => [$controller, 'synchronize'],
-            'permission_callback' => '__return_true'
         ]);
     }
 }

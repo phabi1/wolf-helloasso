@@ -29,6 +29,9 @@ class MultipleHelloAsso implements StrategyInterface
         $payload->payer->last_name = $params['payer']['last_name'];
         $payload->payer->email = $params['payer']['email'];
         $payload->metadata = $params['metadata'] ?? [];
+        $payload->return_url = $params['return_url'] ?? null;
+        $payload->back_url = $params['back_url'] ?? null;
+        $payload->error_url = $params['error_url'] ?? null;
 
         $intent = $this->client->getCheckout()->createPaymentIntent($payload);
 

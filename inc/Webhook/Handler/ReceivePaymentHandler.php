@@ -28,19 +28,24 @@ class ReceivePaymentHandler implements WebhookHandlerInterface
         $payedAt = !empty($data['date']) ? strtotime($data['date']) : time();
         $installmentNumber = $data['installmentNumber'] ?? 0;
 
-        $this->addPayment($amount, $payedAt, $externalId, [
+        $this->addPayment($amount, $payedAt, [
+            'firstname' => $data['payer']['firstName'] ?? '',
+            'lastname' => $data['payer']['lastName'] ?? '',
+            'email' => $data['payer']['email'] ?? '',
+        ], $externalId, [
             'provider' => 'helloasso',
             'order_id' => $orderId,
             'installment_number' => $installmentNumber,
         ]);
     }
 
-    private function addPayment(int $amount, int $payedAt, string $externalId, array $meta = []): void
+    private function addPayment(int $amount, int $payedAt, array $payer, string $externalId, array $meta = []): void
     {
         $this->useCaseBus->execute('wolf-billing.add_payment', [
             'external_id' => $externalId,
             'type' => 'credit',
             'payment_method' => 'credit_card',
+            'payer' => $payer,
             'amount' => $amount,
             'currency' => 'EUR',
             'payed_at' => $payedAt,
